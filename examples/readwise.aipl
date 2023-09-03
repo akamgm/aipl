@@ -1,0 +1,40 @@
+
+
+
+# see https://readwise.io/api_deets
+
+@defop('fetchwise', rankin=None, rankout=1.5)
+def op_fetchwise(aipl, updated_after=None):
+
+    import datetime
+    import requests
+    token = '...'    
+
+    full_data = []
+    next_page_cursor = None
+    while True:
+        params = {}
+        if next_page_cursor:
+            params['pageCursor'] = next_page_cursor
+        if updated_after:
+            params['updatedAfter'] = updated_after
+        print("Making export api request with params " + str(params) + "...")
+        response = requests.get(
+            url="https://readwise.io/api/v2/export/",
+            params=params,
+            headers={"Authorization": f"Token {token}"}, verify=False
+        )
+        full_data.extend(response.json()['results'])
+        next_page_cursor = response.json().get('nextPageCursor')
+        if not next_page_cursor:
+            break
+    return full_data
+
+!fetchwise "2023-01-01T00:00:00.00"
+!format
+{source_url}
+!match .+
+!filter
+!url-split
+!format
+{netloc}

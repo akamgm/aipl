@@ -1,0 +1,7 @@
+def foo():
+    return "1 2 3"
+
+!python-input << foo()
+
+!split
+!print
